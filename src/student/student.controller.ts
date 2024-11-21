@@ -16,8 +16,11 @@ import { JwtGuard } from 'src/auth/guard/jwt.guard';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiNonAuthoritativeInformationResponse,
   ApiOperation,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { ValidationError } from 'class-validator';
 
 @Controller('student')
 export class StudentController {
@@ -29,7 +32,10 @@ export class StudentController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new student' })
-  @ApiCreatedResponse({ description: 'New student created successfully' })
+  @ApiCreatedResponse({
+    description: 'New student created successfully',
+    type: createStudentDto,
+  })
   @ApiBadRequestResponse({ description: 'Invalid data provided' })
   async createStudent(@Body() dto: createStudentDto) {
     const student = await this.studentService.createStudent(dto);
@@ -46,6 +52,10 @@ export class StudentController {
   //? @access  private
 
   @Get()
+  @ApiOperation({ summary: 'Fetching data of all the students' })
+  @ApiCreatedResponse({
+    description: 'Fetched all the students successfully',
+  })
   async getAllStudents() {
     const students = await this.studentService.getAllStudents();
 
@@ -61,6 +71,11 @@ export class StudentController {
   //? @access  private
 
   @Get(':id')
+  @ApiOperation({ summary: 'Fetching data of a student' })
+  @ApiCreatedResponse({
+    description: 'Fetched data of the student successfully',
+  })
+  @ApiBadRequestResponse({ description: 'Invalid data provided' })
   async getStudent(@Param('id', ParseIntPipe) id: number) {
     const student = await this.studentService.getStudent(id);
 
@@ -77,6 +92,12 @@ export class StudentController {
 
   @Patch(':id')
   @UseGuards(JwtGuard)
+  @ApiOperation({ summary: 'Fetching data of a student' })
+  @ApiCreatedResponse({
+    description: 'Fetched data of the student successfully',
+  })
+  @ApiBadRequestResponse({ description: 'Invalid data provided' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized User' })
   async updateStudent(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: editStudentDto,
@@ -95,6 +116,13 @@ export class StudentController {
   //? @access  private
 
   @Delete(':id')
+  @UseGuards(JwtGuard)
+  @ApiOperation({ summary: 'Deleting data of a student' })
+  @ApiCreatedResponse({
+    description: 'Deleted data of a student successfully',
+  })
+  @ApiBadRequestResponse({ description: 'Invalid data provided' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized User' })
   async deleteStudent(@Param('id', ParseIntPipe) id: number) {
     await this.studentService.deleteStudent(id);
 
