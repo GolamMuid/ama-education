@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -17,13 +17,14 @@ async function bootstrap() {
     .setTitle('AMA-Education')
     .setDescription('Api documentation for AMA-Education Backend')
     .setVersion('1.0.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('api', app, document);
 
-  app.getHttpAdapter().get('/', (res: Response) => {
+  app.getHttpAdapter().get('/', (req: Request, res: Response) => {
     res.send('AMA Education');
   });
 

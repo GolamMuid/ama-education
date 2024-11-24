@@ -6,6 +6,9 @@ import { AuthDto } from './dto/auth.dto';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  //? @desc    create a new user
+  //? @route   POST /api/signup
+  //? @access  public
   @Post('signup')
   signup(@Body() dto: AuthDto) {
     console.log({
@@ -13,6 +16,10 @@ export class AuthController {
     });
     return this.authService.signup(dto);
   }
+
+  //? @desc    login
+  //? @route   POST /api/signin
+  //? @access  public
 
   @HttpCode(HttpStatus.OK)
   @Post('signin')

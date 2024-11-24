@@ -15,12 +15,11 @@ import { editStudentDto } from './dto/edit-student.dto';
 import { JwtGuard } from 'src/auth/guard/jwt.guard';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
-  ApiNonAuthoritativeInformationResponse,
   ApiOperation,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { ValidationError } from 'class-validator';
 
 @Controller('student')
 export class StudentController {
@@ -52,10 +51,13 @@ export class StudentController {
   //? @access  private
 
   @Get()
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Fetching data of all the students' })
   @ApiCreatedResponse({
     description: 'Fetched all the students successfully',
   })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized User' })
   async getAllStudents() {
     const students = await this.studentService.getAllStudents();
 
@@ -66,16 +68,19 @@ export class StudentController {
     };
   }
 
-  //? @desc    get a students
+  //? @desc    get a student
   //? @route   GET /api/student/:id
   //? @access  private
 
   @Get(':id')
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Fetching data of a student' })
   @ApiCreatedResponse({
     description: 'Fetched data of the student successfully',
   })
   @ApiBadRequestResponse({ description: 'Invalid data provided' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized User' })
   async getStudent(@Param('id', ParseIntPipe) id: number) {
     const student = await this.studentService.getStudent(id);
 
@@ -92,9 +97,10 @@ export class StudentController {
 
   @Patch(':id')
   @UseGuards(JwtGuard)
-  @ApiOperation({ summary: 'Fetching data of a student' })
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Updating data of a student' })
   @ApiCreatedResponse({
-    description: 'Fetched data of the student successfully',
+    description: 'Updated data of the student successfully',
   })
   @ApiBadRequestResponse({ description: 'Invalid data provided' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized User' })
@@ -117,6 +123,7 @@ export class StudentController {
 
   @Delete(':id')
   @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Deleting data of a student' })
   @ApiCreatedResponse({
     description: 'Deleted data of a student successfully',
